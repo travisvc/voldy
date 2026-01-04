@@ -1,0 +1,35 @@
+services:
+  trainer:
+    build:
+      context: ..
+      dockerfile: src/training/Dockerfile
+    container_name: trainer
+    volumes:
+      - ..:/app
+    environment:
+      - PYTHONPATH=/app
+
+  api:
+    build:
+      context: ..
+      dockerfile: src/api/Dockerfile
+    container_name: api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ..:/app
+    environment:
+      - PYTHONPATH=/app
+
+  web:
+    build: ./web
+    container_name: web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web:/app
+      - /app/node_modules
